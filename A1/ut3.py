@@ -13,6 +13,18 @@ class T3(object):
         '''Function checks utility value of a state'''
         pass
 
+    def actions(self, game_state):
+        '''Returns all possible actions from a particular state'''
+        pass
+
+    def result(self, game_state, move):
+        '''Returns result of a move in a game_state'''
+        pass
+
+    def terminal_test(self, game_state):
+        '''Checks whether end is reached'''
+        pass
+
     def validate_move(self):
         '''Function to check if move is valid or not'''
         pass
