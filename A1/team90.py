@@ -58,6 +58,15 @@ class Player90(object):
             elif old_move[0] in [1,4,7] and old_move[1] in [1,4,7]:
                 blocks_allowed = [4]
 
+        # Restrict moves once a block is won
+        temp_blocks_allowed = []
+        for block in blocks_allowed:
+            if temp_block[block] in ['x', 'o']:
+                continue
+            temp_blocks_allowed.append(block)
+
+        # print temp_block,blocks_allowed, temp_blocks_allowed
+        blocks_allowed = temp_blocks_allowed[:]
         # We get all the empty cells in allowed blocks. If they're all full, we get all the empty cells in the entire board.
         cells = self.get_empty_out_of(temp_board, blocks_allowed)
         return cells
