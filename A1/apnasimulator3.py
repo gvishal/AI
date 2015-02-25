@@ -22,8 +22,9 @@ def jaadu(available_cells, board, flag):
             max_cell = cell
         # print cell, values[cell]
     print max_cell, max_value
-    # return max_cell
-    exit(0)
+    # x = raw_input()
+    return max_cell
+    # exit(0)
 
 def debug_chota_board(board):
     for i in [0,1,2]:
@@ -43,7 +44,7 @@ def utility(cell, board, flag):
     value = (line_possible(x%3, y%3)*block_factor)
     #super block
     value *= (line_possible(x/3, y/3)*super_block_factor)
-    board[x%3][y%3] = flag
+    board[x][y] = flag
     
     #for chota board
     chota_board = get_2d_list_slice(board, (x/3) * 3, ((x/3) * 3) + 3, (y/3) * 3, ((y/3) * 3) + 3)
@@ -60,7 +61,7 @@ def utility(cell, board, flag):
                 super_block_status[i][j] = '-'
     value += line_bani(super_block_status)*super_line_factor
 
-    board[x%3][y%3] = '-'
+    board[x][y] = '-'
     return value
 
 def line_possible(x, y):
