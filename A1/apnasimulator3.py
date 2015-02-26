@@ -55,12 +55,15 @@ def utility(cell, board, flag):
     for i in [0,1,2]:
         for j in [0,1,2]:
             chotu = get_2d_list_slice(board, i * 3, (i * 3) + 3, j * 3, (j * 3) + 3)
-            if line_bani(chotu):
-                super_block_status[i][j] = 1
-            else:
-                super_block_status[i][j] = '-'
+            # if line_bani(chotu):
+            #     super_block_status[i][j] = 1
+            # else:
+            #     super_block_status[i][j] = '-'
+            super_block_status[i][j] = line_bani_flag(chotu)
+
     #bug since we only assign value 1 to whether line is formed by x or o this results in next result
     #becoming true for most cases
+    #fixed above
     value += line_bani(super_block_status)*super_line_factor
 
     board[x][y] = '-'
@@ -75,19 +78,6 @@ def line_possible(x, y):
     else:
         return 2
 
-def line_bani1(board):
-    #chota board
-    for i in [0,1,2]:
-        if board[i*3] != '-' and board[i*3] == board[i*3 + 1] == board[i*3 + 2]:
-            return 1
-        if board[i*3] != '-' and board[i] == board[i + 3]==board[i + 6]:
-            return 1
-    if board[0] != '-' and board[0] == board[4] == board[8]:
-        return 1
-    if board[2] != '-' and board[4] == board[2] == board[6]:
-        return 1
-    return 0
-
 def line_bani(board):
     #chota board
     for i in [0,1,2]:
@@ -98,6 +88,45 @@ def line_bani(board):
     if board[0][0] != '-' and board[0][0]==board[1][1]==board[2][2]:
         return 1
     if board[2][0] != '-' and board[2][0]==board[1][1]==board[0][2]:
+        return 1
+    return 0
+
+def line_bani_flag(board):
+    '''Returns flag if a line is formed'''
+    #chota board
+    for i in [0,1,2]:
+        if board[i][0] != '-' and board[i][0]==board[i][1]==board[i][2]:
+            if board[i][0] == 'x':
+                return 'x'
+            else:
+                return 'o'
+        if board[0][i] != '-' and board[0][i]==board[1][i]==board[2][i]:
+            if board[0][i] == 'x':
+                return 'x'
+            else:
+                return 'o'
+    if board[0][0] != '-' and board[0][0]==board[1][1]==board[2][2]:
+        if board[0][0] == 'x':
+            return 'x'
+        else:
+            return 'o'
+    if board[2][0] != '-' and board[2][0]==board[1][1]==board[0][2]:
+        if board[2][0] == 'x':
+            return 'x'
+        else:
+            return 'o'
+    return '-'
+
+def line_bani1(board):
+    #chota board
+    for i in [0,1,2]:
+        if board[i*3] != '-' and board[i*3] == board[i*3 + 1] == board[i*3 + 2]:
+            return 1
+        if board[i*3] != '-' and board[i] == board[i + 3]==board[i + 6]:
+            return 1
+    if board[0] != '-' and board[0] == board[4] == board[8]:
+        return 1
+    if board[2] != '-' and board[4] == board[2] == board[6]:
         return 1
     return 0
 
