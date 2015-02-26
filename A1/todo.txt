@@ -1,0 +1,2 @@
+Add factor for:
+1. If density of your flag is more in a block give it higher weight(see game_lost2 :307)
