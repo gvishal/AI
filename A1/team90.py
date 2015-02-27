@@ -35,15 +35,14 @@ class Player90(object):
         no_moves_possible = len(self.actions(temp_board, temp_block, old_move, flag))
         print "no_moves_possible: %s" % (str(no_moves_possible))
         d = 2
-        if no_moves_possible > 60:
+        if no_moves_possible > 40:
             d = 2
         elif no_moves_possible > 20:
             d = 3
         elif no_moves_possible > 10:
-            d = 4
+            d = 3
         else:
-            d = 4
-        d = 4
+            d = 3
 
         start = time.time()
         move = self.alphabeta_search(temp_board, temp_block, old_move, flag, own_flag,d)
@@ -106,8 +105,10 @@ class Player90(object):
 
         # Body of alphabeta_search starts here:
         # The default test cuts off at depth d or at a terminal state
+        # cutoff_test = (cutoff_test or
+        #                (lambda state,depth: depth>d or self.terminal_test(state, block) or (time.time() - start) > 5.9))
         cutoff_test = (cutoff_test or
-                       (lambda state,depth: depth>d or self.terminal_test(state, block) or (time.time() - start) > 5.9))
+                       (lambda state,depth: depth>d or self.terminal_test(state, block)))
         eval_fn = eval_fn or (lambda cell,state,flag,own_flag: self.utility(cell, state, flag, own_flag))
         return argmax(self.actions(state, block, old_move, flag),
                       lambda a: min_value(a, state, block, self.next_move(flag), own_flag,
@@ -349,48 +350,6 @@ class Player90(object):
     def get_2d_list_slice(self, matrix, start_row, end_row, start_col, end_col):
         return [row[start_col:end_col] for row in matrix[start_row:end_row]]
 
-    def utility(self, cell, board, flag=None, own_flag=None):
-        super_block_factor = 10
-        block_factor = 5
-        line_factor = 300
-        super_line_factor = 10000
-
-        if not flag:
-            flag = self.to_move(board)
-
-        value = 0
-        x,y = cell
-        #block
-        value = (self.line_possible(x%3, y%3)*block_factor)
-        #super block
-        value *= (self.line_possible(x/3, y/3)*super_block_factor)
-        board[x][y] = flag
-        
-        #for chota board
-        chota_board = self.get_2d_list_slice(board, (x/3) * 3, ((x/3) * 3) + 3, (y/3) * 3, ((y/3) * 3) + 3)
-        value += self.line_bani(chota_board)*line_factor
-        #end for chota board
-
-        super_block_status = [['-','-','-'],['-','-','-'],['-','-','-']]
-        for i in [0,1,2]:
-            for j in [0,1,2]:
-                chotu = self.get_2d_list_slice(board, i * 3, (i * 3) + 3, j * 3, (j * 3) + 3)
-                # if self.line_bani(chotu):
-                #     super_block_status[i][j] = 1
-                # else:
-                #     super_block_status[i][j] = '-'
-                super_block_status[i][j] = self.line_bani_flag(chotu)
-
-        #bug since we only assign value 1 to whether line is formed by x or o this results in next result
-        #becoming true for most cases
-        #fixed above
-        value += self.line_bani(super_block_status)*super_line_factor
-
-        board[x][y] = '-'
-        if flag != own_flag:
-            return -value
-        return value
-
     def line_possible(self, x, y):
         # x,y = cell
         if x == 1 and y == 1:
@@ -452,6 +411,48 @@ class Player90(object):
             return 1
         return 0
 
+    def utility(self, cell, board, flag=None, own_flag=None):
+        super_block_factor = 10
+        block_factor = 5
+        line_factor = 300
+        super_line_factor = 10000
+
+        if not flag:
+            flag = self.to_move(board)
+
+        value = 0
+        x,y = cell
+        #block
+        value = (self.line_possible(x%3, y%3)*block_factor)
+        #super block
+        value += (self.line_possible(x/3, y/3)*super_block_factor)
+        board[x][y] = flag
+        
+        #for chota board
+        chota_board = self.get_2d_list_slice(board, (x/3) * 3, ((x/3) * 3) + 3, (y/3) * 3, ((y/3) * 3) + 3)
+        value += self.line_bani(chota_board)*line_factor
+        #end for chota board
+
+        super_block_status = [['-','-','-'],['-','-','-'],['-','-','-']]
+        for i in [0,1,2]:
+            for j in [0,1,2]:
+                chotu = self.get_2d_list_slice(board, i * 3, (i * 3) + 3, j * 3, (j * 3) + 3)
+                # if self.line_bani(chotu):
+                #     super_block_status[i][j] = 1
+                # else:
+                #     super_block_status[i][j] = '-'
+                super_block_status[i][j] = self.line_bani_flag(chotu)
+
+        #bug since we only assign value 1 to whether line is formed by x or o this results in next result
+        #becoming true for most cases
+        #fixed above
+        value += self.line_bani(super_block_status)*super_line_factor
+
+        board[x][y] = '-'
+        if flag != own_flag:
+            return -value
+        return value
+
 class Player91(Player90):
 
     def __init__(self):
@@ -464,7 +465,7 @@ class Player91(Player90):
     def utility(self, cell, board, flag=None, own_flag=None):
         super_block_factor = 8
         block_factor = 12
-        line_factor = 30
+        line_factor = 300
         super_line_factor = 10000
         if not flag:
             flag = self.to_move(board)

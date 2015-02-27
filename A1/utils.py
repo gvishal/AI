@@ -376,6 +376,8 @@ def argmin(seq, fn):
         x_score = fn(x)
         if x_score < best_score:
             best, best_score = x, x_score
+        if x_score <= best_score and random.randint(0,1)>0:
+            best, best_score = x, x_score
     return best
 
 def argmin_list(seq, fn):
