@@ -1,8 +1,6 @@
 import sys
 import random
 import signal
-import copy
-import time
 
 #Timer handler, helper function
 
@@ -13,27 +11,7 @@ def handler(signum, frame):
     #print 'Signal handler called with signal', signum
     raise TimedOutExc()
 
-test_board = [
-['-', 'o', 'o', 'x', 'o', 'o', 'x', '-', '-'],
-['o', 'x', 'o', 'o', 'x', 'x', '-', 'x', '-'],
-['-', '-', 'o', 'x', 'o', 'o', '-', '-', 'x'],
-['x', '-', 'o', '-', '-', '-', 'x', '-', 'x'],
-['o', 'x', '-', '-', 'x', '-', '-', 'x', '-'],
-['-', '-', 'x', 'o', 'o', 'o', 'o', 'o', 'o'],
-['x', '-', '-', 'x', '-', 'o', 'x', '-', '-'],
-['-', 'x', '-', '-', 'x', 'o', '-', 'x', '-'],
-['o', 'o', 'x', 'x', '-', 'o', '-', '-', 'x']
-]
-temp_bs = [
-'o', 'd', 'x',
-'x', 'o', 'o',
-'x', 'o', 'x'
-]
-
-from utils import argmax
-infinity = 100000000
-
-from team90 import Player90
+from team90 import Player90, Player91
 
 class Manual_player:
     def __init__(self):
@@ -567,7 +545,7 @@ if __name__ == '__main__':
     option = sys.argv[1]    
     if option == '1':
         obj1 = Player90()
-        obj2 = Player90()
+        obj2 = Player91()
 
     elif option == '2':
         obj1 = Player90()
