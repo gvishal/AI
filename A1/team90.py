@@ -14,7 +14,7 @@ def handler(signum, frame):
     raise TimedOutExc()
 
 from utils import argmax
-infinity = 100000000
+infinity = 100000
 
 class Player90(object):
 
@@ -43,11 +43,12 @@ class Player90(object):
             d = 4
         else:
             d = 4
+        d = 4
 
         start = time.time()
         move = self.alphabeta_search(temp_board, temp_block, old_move, flag, own_flag,d)
         end = time.time()
-        print "DEBUG"
+        print "DEBUG 90"
         print "Time taken", end - start
         print move
         # print_lists(current_board_game, board_stat)
@@ -106,7 +107,7 @@ class Player90(object):
         # Body of alphabeta_search starts here:
         # The default test cuts off at depth d or at a terminal state
         cutoff_test = (cutoff_test or
-                       (lambda state,depth: depth>d or self.terminal_test(state, block) or (time.time() - start)/60 > 5))
+                       (lambda state,depth: depth>d or self.terminal_test(state, block) or (time.time() - start) > 5.9))
         eval_fn = eval_fn or (lambda cell,state,flag,own_flag: self.utility(cell, state, flag, own_flag))
         return argmax(self.actions(state, block, old_move, flag),
                       lambda a: min_value(a, state, block, self.next_move(flag), own_flag,

@@ -79,8 +79,8 @@ class Player1:
                 blocks_allowed.remove(i)
     # We get all the empty cells in allowed blocks. If they're all full, we get all the empty cells in the entire board.
         cells = get_empty_out_of(temp_board, blocks_allowed,temp_block)
-        player = Player90()
-        return player.jaadu(cells, temp_board, flag)
+
+        return cells[random.randrange(len(cells))]
 
 class Player2:
     
@@ -423,8 +423,8 @@ def simulate(obj1,obj2):
     WINNER = ''
     MESSAGE = ''
 
-        #Make your move in 6 seconds!
-    TIMEALLOWED = 60
+    #Make your move in 6 seconds!
+    TIMEALLOWED = 6
 
     print_lists(game_board, block_stat)
 
@@ -545,7 +545,7 @@ if __name__ == '__main__':
     option = sys.argv[1]    
     if option == '1':
         obj1 = Player90()
-        obj2 = Player91()
+        obj2 = Player1()
 
     elif option == '2':
         obj1 = Player90()
