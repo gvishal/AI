@@ -1,17 +1,7 @@
 import sys
 import random
-import signal
 import copy
 import time
-
-#Timer handler, helper function
-
-class TimedOutExc(Exception):
-        pass
-
-def handler(signum, frame):
-    #print 'Signal handler called with signal', signum
-    raise TimedOutExc()
 
 infinity = 100000
 
@@ -44,7 +34,7 @@ class Player90(object):
             d = 3
 
         start = time.time()
-        move = self.alphabeta_search(temp_board, temp_block, old_move, flag, own_flag,d)
+        move = self.alphabeta_search(temp_board, temp_block, old_move, flag, own_flag, d)
         end = time.time()
         print "DEBUG 90"
         print "Time taken", end - start
@@ -495,7 +485,7 @@ class Player90(object):
             flag = self.to_move(board)
 
         value = 0
-        x,y = cell
+        x, y = cell
         #block
         value = (self.line_possible(x%3, y%3)*block_factor)
         #super block
@@ -507,9 +497,9 @@ class Player90(object):
         value += self.line_bani(chota_board)*line_factor
         #end for chota board
 
-        super_block_status = [['-','-','-'],['-','-','-'],['-','-','-']]
-        for i in [0,1,2]:
-            for j in [0,1,2]:
+        super_block_status = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]
+        for i in [0, 1, 2]:
+            for j in [0, 1, 2]:
                 chotu = self.get_2d_list_slice(board, i * 3, (i * 3) + 3, j * 3, (j * 3) + 3)
                 # if self.line_bani(chotu):
                 #     super_block_status[i][j] = 1
@@ -530,13 +520,13 @@ class Player90(object):
 class Player91(Player90):
 
     def __init__(self):
-        pass
+        super(Player91, self).__init__()
 
     def move(self, current_board_game, board_stat, move_by_opponent, flag):
         print "DEBUG 91"
         return super(Player91, self).move(current_board_game, board_stat, move_by_opponent, flag)
 
-    def utility(self, cell, board, flag=None, own_flag=None):
+    def utility(self, cell, board, flag = None, own_flag = None):
         super_block_factor = 8
         block_factor = 12
         line_factor = 300
@@ -545,7 +535,7 @@ class Player91(Player90):
             flag = self.to_move(board)
 
         value = 0
-        x,y = cell
+        x, y = cell
         #block
         value = (self.line_possible(x%3, y%3)*block_factor)
         #super block
@@ -557,9 +547,9 @@ class Player91(Player90):
         value += self.line_bani(chota_board)*line_factor
         #end for chota board
 
-        super_block_status = [['-','-','-'],['-','-','-'],['-','-','-']]
-        for i in [0,1,2]:
-            for j in [0,1,2]:
+        super_block_status = [['-', '-', '-'], ['-', '-', '-'], ['-', '-', '-']]
+        for i in [0, 1, 2]:
+            for j in [0, 1, 2]:
                 chotu = self.get_2d_list_slice(board, i * 3, (i * 3) + 3, j * 3, (j * 3) + 3)
                 # if self.line_bani(chotu):
                 #     super_block_status[i][j] = 1

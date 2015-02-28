@@ -482,7 +482,7 @@ def simulate(obj1,obj2):
         temp_board_state = game_board[:]
         temp_block_stat = block_stat[:]
 
-
+        raw_input("Press enter for next move")
         signal.signal(signal.SIGALRM, handler)
         signal.alarm(TIMEALLOWED)
         try:
