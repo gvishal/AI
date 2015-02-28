@@ -545,7 +545,7 @@ if __name__ == '__main__':
     option = sys.argv[1]    
     if option == '1':
         obj1 = Player90()
-        obj2 = Player91()
+        obj2 = Player1()
 
     elif option == '2':
         obj1 = Player90()
