@@ -515,7 +515,7 @@ def simulate(obj1,obj2):
             break
         old_move = ret_move_pl2
         print_lists(game_board, block_stat)
-    
+     
     print WINNER + " won!"
     print MESSAGE
 

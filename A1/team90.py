@@ -1,8 +1,8 @@
-import sys
 import random
 import copy
 import time
-
+import pickle
+import cPickle
 infinity = 100000
 
 class Player90(object):
@@ -15,24 +15,23 @@ class Player90(object):
 
         #Assign variables
         # temp_board = current_board_game[:]
-        temp_board = copy.deepcopy(current_board_game)
+        # temp_board = copy.deepcopy(current_board_game)
+        temp_board = cPickle.loads(cPickle.dumps(current_board_game, -1))
         # temp_block = board_stat[:]
-        temp_block = copy.deepcopy(board_stat)
+        temp_block = cPickle.loads(cPickle.dumps(board_stat, -1))
+        # temp_block = copy.deepcopy(board_stat)
         old_move = move_by_opponent
         own_flag = flag
 
-        no_moves_possible = len(self.actions(temp_board, temp_block, old_move, flag))
-        print "no_moves_possible: %s" % (str(no_moves_possible))
-        d = 2
-        if no_moves_possible > 40:
-            d = 2
-        elif no_moves_possible > 20:
-            d = 3
-        elif no_moves_possible > 10:
-            d = 3
-        else:
-            d = 3
+        chances_moved_till = 0
+        for i in range(9):
+            for j in range(9):
+                if temp_board[i][j] != '-':
+                    chances_moved_till = chances_moved_till + 1
 
+        d = 2*(1.5**(0.1*chances_moved_till))
+        d = int(d/2)*2
+        print "Total depth checked  : ",d
         start = time.time()
         move = self.alphabeta_search(temp_board, temp_block, old_move, flag, own_flag, d)
         end = time.time()
@@ -59,14 +58,22 @@ class Player90(object):
                 return eval_fn(cell, state, flag, own_flag)
             v = -infinity
             old_move = cell
-            # new_state = state[:][:]
-            new_state = copy.deepcopy(state)
-            # new_block = block[:]
-            new_block = copy.deepcopy(block)
-            self.update_lists(new_state, new_block, cell, flag)
+            new_state = cPickle.loads(cPickle.dumps(state, -1))
+            new_block = cPickle.loads(cPickle.dumps(block, -1))
 
-            for a in self.actions(new_state, new_block, old_move, flag):
-                v = max(v, min_value(a, new_state, new_block, self.next_move(flag), own_flag,
+            self.update_lists(new_state, new_block, cell, flag)
+            all_possible_actions = self.actions(new_state, new_block, old_move, flag)
+
+            no_of_action_in_next_level = []
+            for a in all_possible_actions:
+                new_state[a[0]][a[1]] = flag
+                no_of_action_in_next_level.append((a, len(self.actions(new_state, new_block, old_move, self.next_move(flag)))))
+                new_state[a[0]][a[1]] = '-'
+
+            no_of_action_in_next_level.sort(key=lambda tup: tup[1])
+
+            for a in no_of_action_in_next_level:
+                v = max(v, min_value(a[0], new_state, new_block, self.next_move(flag), own_flag,
                                      alpha, beta, depth+1))
                 if v >= beta:
                     return v
@@ -78,14 +85,28 @@ class Player90(object):
                 return eval_fn(cell, state, flag, own_flag)
             v = infinity
             old_move = cell
-            # new_state = state[:][:]
-            new_state = copy.deepcopy(state)
-            # new_block = block[:]
-            new_block = copy.deepcopy(block)
+            # # new_state = state[:][:]
+            # new_state = copy.deepcopy(state)
+            # # new_block = block[:]
+            # new_block = copy.deepcopy(block)
+
+            new_state = cPickle.loads(cPickle.dumps(state, -1))
+            new_block = cPickle.loads(cPickle.dumps(block, -1))
+
             self.update_lists(new_state, new_block, cell, flag)
             #update block and state
-            for a in self.actions(new_state, new_block, old_move, flag):
-                v = min(v, max_value(a, new_state, new_block, self.next_move(flag), own_flag,
+            all_possible_actions = self.actions(new_state, new_block, old_move, flag)
+
+            no_of_action_in_next_level = []
+            for a in all_possible_actions:
+                new_state[a[0]][a[1]] = flag
+                no_of_action_in_next_level.append((a, len(self.actions(new_state, new_block, old_move, self.next_move(flag)))))
+                new_state[a[0]][a[1]] = '-'
+
+            no_of_action_in_next_level.sort(key=lambda tup: tup[1])
+
+            for a in no_of_action_in_next_level:
+                v = min(v, max_value(a[0], new_state, new_block, self.next_move(flag), own_flag,
                                      alpha, beta, depth+1))
                 if v <= alpha:
                     return v
@@ -136,7 +157,6 @@ class Player90(object):
                 blocks_allowed = [5,7,8]
             else:
                 print "SOMETHING REALLY WEIRD HAPPENED!"
-                sys.exit(1)
         else:
         #### we will have only 1 block to choose from (or maybe NONE of them, which calls for a free move)
             if old_move[0] % 3 == 0 and old_move[1] in [1,4,7]:
@@ -167,7 +187,8 @@ class Player90(object):
     def result(self, state, move):
         "Return the state that results from making a move from a state."
         x, y  = move
-        new_state = copy.deepcopy(state)
+        new_state = cPickle.loads(cPickle.dumps(state, -1))
+        # new_state = copy.deepcopy(state)
         new_state[x][y] = to_move(state)
         return new_state
 
@@ -197,10 +218,9 @@ class Player90(object):
         "Return True if this is a final state for the game."
         return self.terminal_state_reached(state, block)
 
-    def terminal_state_reached(self, game_board, block_stat):
+    def terminal_state_reached(self, game_board, bs):
         '''Checks whether end is reached'''
         #Check if game is won!
-        bs = block_stat
         ## Row win
         if (bs[0] == bs[1] and bs[1] == bs[2] and bs[1]!='-' and bs[1]!='d') or (bs[3]!='d' and bs[3]!='-' and bs[3] == bs[4] and bs[4] == bs[5]) or (bs[6]!='d' and bs[6]!='-' and bs[6] == bs[7] and bs[7] == bs[8]):
             # print block_stat
@@ -217,44 +237,9 @@ class Player90(object):
             smfl = 0
             for i in range(9):
                 for j in range(9):
-                    if game_board[i][j] == '-' and block_stat[(i/3)*3+(j/3)] == '-':
-                        smfl = 1
-                        break
-            if smfl == 1:
-                #Game is still on!
-                return False
-            
-            else:
-                #Changed scoring mechanism
-                # 1. If there is a tie, player with more boxes won, wins.
-                # 2. If no of boxes won is the same, player with more corner move, wins. 
-                point1 = 0
-                point2 = 0
-                for i in block_stat:
-                    if i == 'x':
-                        point1+=1
-                    elif i=='o':
-                        point2+=1
-                if point1>point2:
-                    return True
-                elif point2>point1:
-                    return True
-                else:
-                    point1 = 0
-                    point2 = 0
-                    for i in range(len(game_board)):
-                        for j in range(len(game_board[i])):
-                            if i%3!=1 and j%3!=1:
-                                if game_board[i][j] == 'x':
-                                    point1+=1
-                                elif game_board[i][j]=='o':
-                                    point2+=1
-                    if point1>point2:
-                        return True
-                    elif point2>point1:
-                        return True
-                    else:
-                        return True
+                    if game_board[i][j] == '-' and bs[(i/3)*3+(j/3)] == '-':
+                        return False
+            return True
 
     def update_lists(self, game_board, block_stat, move_ret, fl):
         #move_ret has the move to be made, so we modify the game_board, and then check if we need to modify block_stat
@@ -445,6 +430,7 @@ class Player90(object):
         """Return an element with lowest fn(seq[i]) score; break ties at random.
         Thus, for all s,f: argmin_random_tie(s, f) in argmin_list(s, f)"""
         best_score = fn(seq[0]); n = 0
+        best = seq[0]
         for x in seq:
             x_score = fn(x)
             if x_score < best_score:
