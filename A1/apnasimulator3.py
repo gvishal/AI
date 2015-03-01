@@ -424,7 +424,7 @@ def simulate(obj1,obj2):
     MESSAGE = ''
 
     #Make your move in 6 seconds!
-    TIMEALLOWED = 6
+    TIMEALLOWED = 600
 
     print_lists(game_board, block_stat)
 
@@ -482,7 +482,7 @@ def simulate(obj1,obj2):
         temp_board_state = game_board[:]
         temp_block_stat = block_stat[:]
 
-        raw_input("Press enter for next move")
+        # raw_input("Press enter for next move")
         signal.signal(signal.SIGALRM, handler)
         signal.alarm(TIMEALLOWED)
         try:

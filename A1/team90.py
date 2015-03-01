@@ -29,8 +29,20 @@ class Player90(object):
                 if temp_board[i][j] != '-':
                     chances_moved_till = chances_moved_till + 1
 
-        d = 2*(1.5**(0.1*chances_moved_till))
-        d = int(d/2)*2
+        if chances_moved_till == 0:
+            print "here"
+            return (4,4)
+
+        # d = 2*(1.4**(0.1*chances_moved_till))
+        # d = int(d/2)*2
+        # d = min(6,d)
+        # d = max(4,d)
+
+        if chances_moved_till>30:
+            d = 6
+        else:
+            d = 4
+
         print "Total depth checked  : ",d
         start = time.time()
         move = self.alphabeta_search(temp_board, temp_block, old_move, flag, own_flag, d)
@@ -464,7 +476,8 @@ class Player90(object):
     def utility(self, cell, board, flag=None, own_flag=None):
         super_block_factor = 10
         block_factor = 5
-        line_factor = 300
+        line_factor = 400
+        line_roko_factor = 300
         super_line_factor = 10000
 
         if not flag:
@@ -476,8 +489,13 @@ class Player90(object):
         value = (self.line_possible(x%3, y%3)*block_factor)
         #super block
         value += (self.line_possible(x/3, y/3)*super_block_factor)
+        #TO SEE OTHER PERSON KI TOH NHI BAN RHI
+        board[x][y] = self.next_move(flag)
+        chota_board = self.get_2d_list_slice(board, (x/3) * 3, ((x/3) * 3) + 3, (y/3) * 3, ((y/3) * 3) + 3)
+        value += self.line_bani(chota_board)*line_roko_factor
+        value += chota_board.count('-')
+        #END OF ABOVE
         board[x][y] = flag
-        
         #for chota board
         chota_board = self.get_2d_list_slice(board, (x/3) * 3, ((x/3) * 3) + 3, (y/3) * 3, ((y/3) * 3) + 3)
         value += self.line_bani(chota_board)*line_factor
@@ -513,9 +531,10 @@ class Player91(Player90):
         return super(Player91, self).move(current_board_game, board_stat, move_by_opponent, flag)
 
     def utility(self, cell, board, flag = None, own_flag = None):
-        super_block_factor = 8
-        block_factor = 12
-        line_factor = 300
+        super_block_factor = 10
+        block_factor = 5
+        line_factor = 400
+        line_roko_factor = 300
         super_line_factor = 10000
         if not flag:
             flag = self.to_move(board)
@@ -526,6 +545,14 @@ class Player91(Player90):
         value = (self.line_possible(x%3, y%3)*block_factor)
         #super block
         value += (self.line_possible(x/3, y/3)*super_block_factor)
+
+
+        #TO SEE OTHER PERSON KI TOH NHI BAN RHI
+        board[x][y] = self.next_move(flag)
+        chota_board = self.get_2d_list_slice(board, (x/3) * 3, ((x/3) * 3) + 3, (y/3) * 3, ((y/3) * 3) + 3)
+        value += self.line_bani(chota_board)*line_roko_factor
+        #END OF ABOVE
+
         board[x][y] = flag
         
         #for chota board
